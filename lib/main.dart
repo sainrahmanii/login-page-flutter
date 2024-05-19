@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 // import 'package:project_flutter/card.dart';
 // import 'package:project_flutter/destination.dart';
-import 'package:project_flutter/home.dart';
 import 'package:project_flutter/login_page.dart';
 
 void main() {
@@ -15,13 +14,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
-        useMaterial3: true,
-      ),
-      home: LoginPage()
-    );
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
+          useMaterial3: true,
+          fontFamily: 'Clash Display',
+        ),
+        home: LoginPage());
   }
 }

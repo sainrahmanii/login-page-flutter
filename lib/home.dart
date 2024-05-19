@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project_flutter/kartu.dart';
 import 'package:project_flutter/destination.dart';
 import 'package:project_flutter/kartu_ewallet.dart';
+import 'package:project_flutter/movie/movie_home.dart';
 
 class Home extends StatelessWidget{
   @override
@@ -103,6 +104,24 @@ class Home extends StatelessWidget{
               const Padding(
                 padding: EdgeInsets.only(left: 30, right: 30, bottom: 20),
                 child: KartuEwallet(),
+              ),
+              Center(
+                heightFactor: 2,
+                child: ElevatedButton(onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const MovieHome()));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  fixedSize: const Size(200, 40)
+                ),
+                child: const Text(
+                  'Go to Home Movie',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600
+                  ),
+                ),
+                ),
               )
             ],
           ),
