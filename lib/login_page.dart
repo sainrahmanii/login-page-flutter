@@ -154,15 +154,16 @@ class LoginPage extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        'Forgot Password ?',
-                        style: TextStyle(
-                          color: Colors.blueAccent,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      )),
+                    onPressed: () {},
+                    child: const Text(
+                      'Forgot Password ?',
+                      style: TextStyle(
+                        color: Colors.blueAccent,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(
                   height: 20,
@@ -228,8 +229,9 @@ class LoginPage extends StatelessWidget {
                           const Text(
                             'Google',
                             style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
@@ -252,8 +254,9 @@ class LoginPage extends StatelessWidget {
                           const Text(
                             'Facebook',
                             style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),

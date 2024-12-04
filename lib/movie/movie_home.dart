@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:project_flutter/config/config.dart';
+import 'package:project_flutter/model/film_model.dart';
+import 'package:project_flutter/services/get_film.dart';
 import 'package:project_flutter/widgets/RowFilm.dart';
 
 class MovieHome extends StatefulWidget {
@@ -9,13 +12,27 @@ class MovieHome extends StatefulWidget {
 }
 
 class _MovieHomeState extends State<MovieHome> {
-  List<Color> listOfColor = [
-    Colors.blueAccent,
-    Colors.greenAccent,
-    Colors.redAccent
-  ];
+  List<FilmModel> listOfPopularFilm = [];
+  List<FilmModel> listOfTopRatedFilm = [];
+  List<FilmModel> listOfUpcomingFilm = [];
 
   int currentIndexSlider = 0;
+  bool isLoading = true;
+
+  getFilm() async {
+    listOfPopularFilm = await GetFilm().getPopularFilm();
+    listOfTopRatedFilm = await GetFilm().getTopRatedFilm();
+    listOfUpcomingFilm = await GetFilm().getUpcomingFilm();
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getFilm();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +45,10 @@ class _MovieHomeState extends State<MovieHome> {
               _appBar(),
               _slideImage(),
               _indicator(),
-              _rowFilm(),
-              _rowFilmPopular(),
+              _rowFilm('Top Rated', listOfTopRatedFilm),
+              _rowFilm('Popular', listOfPopularFilm),
+              _rowFilm('Upcoming', listOfUpcomingFilm),
+              // _rowFilmPopular(),
             ],
           ),
         ),
@@ -37,9 +56,9 @@ class _MovieHomeState extends State<MovieHome> {
     );
   }
 
-  _rowFilm() {
+  _rowFilm(title, list) {
     return Padding(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 25,
         vertical: 10,
       ),
@@ -49,13 +68,13 @@ class _MovieHomeState extends State<MovieHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Recomended for you',
-                style: TextStyle(
+                title,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
               ),
-              Text(
+              const Text(
                 'See All',
                 style: TextStyle(
                   fontSize: 14,
@@ -64,16 +83,15 @@ class _MovieHomeState extends State<MovieHome> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                RowFilm(),
-                RowFilm(),
-                RowFilm(),
+                for (var i = 0; i < list.length; i++)
+                  RowFilm(filmModel: list[i])
               ],
             ),
           ),
@@ -84,13 +102,13 @@ class _MovieHomeState extends State<MovieHome> {
 
   _rowFilmPopular() {
     return Padding(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 25,
         vertical: 10,
       ),
       child: Column(
         children: [
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
@@ -109,16 +127,15 @@ class _MovieHomeState extends State<MovieHome> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                RowFilm(),
-                RowFilm(),
-                RowFilm(),
+                for (var i = 0; i < listOfPopularFilm.length; i++)
+                  RowFilm(filmModel: listOfPopularFilm[i])
               ],
             ),
           ),
@@ -128,8 +145,8 @@ class _MovieHomeState extends State<MovieHome> {
   }
 
   _appBar() {
-    return Padding(
-      padding: const EdgeInsets.only(
+    return const Padding(
+      padding: EdgeInsets.only(
         top: 10,
         left: 25,
         right: 25,
@@ -178,116 +195,130 @@ class _MovieHomeState extends State<MovieHome> {
   }
 
   _slideImage() {
-    return Container(
-      height: 200,
-      child: PageView.builder(
-        itemCount: listOfColor.length,
-        onPageChanged: (value) {
-          setState(
-            () {
-              currentIndexSlider = value;
-            },
-          );
-        },
-        itemBuilder: (context, index) {
-          return Stack(
-            children: [
-              Container(
-                height: 200,
-                width: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/img_bg_build.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Container(
-                height: 200,
-                width: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xff685CF0),
-                      Color(0xff685CF0).withOpacity(0.9),
-                      Colors.transparent
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                width: 200,
-                padding: EdgeInsets.only(
-                  left: 40,
-                  top: 20,
-                  bottom: 20,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return isLoading
+        ? const SizedBox(
+            height: 200,
+            child: Center(
+              child: CircularProgressIndicator(color: Colors.blueAccent),
+            ),
+          )
+        : SizedBox(
+            height: 200,
+            child: PageView.builder(
+              itemCount: listOfPopularFilm.length,
+              onPageChanged: (value) {
+                setState(
+                  () {
+                    currentIndexSlider = value;
+                  },
+                );
+              },
+              itemBuilder: (context, index) {
+                return Stack(
                   children: [
-                    Text(
-                      'Watch popular movies 1917',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    Spacer(),
-                    Text(
-                      'Lorem ipsum dolor sit amet, consectetur adipsci elit.',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                      ),
-                    ),
-                    Spacer(),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Watch Now',
-                        style: TextStyle(
-                          color: Color(0xff685CF0),
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        image: DecorationImage(
+                          image: NetworkImage(
+                              '$baseImageUrl/${listOfPopularFilm[index].backdropPath ?? ''}'),
+                          fit: BoxFit.cover,
                         ),
+                      ),
+                    ),
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xff685CF0),
+                            const Color(0xff685CF0).withOpacity(0.9),
+                            Colors.transparent
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 200,
+                      padding: const EdgeInsets.only(
+                        left: 40,
+                        top: 20,
+                        bottom: 20,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            listOfPopularFilm[index].title ?? '',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            listOfPopularFilm[index].overview ?? '',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const Spacer(),
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: const Text(
+                              'Watch Now',
+                              style: TextStyle(
+                                color: Color(0xff685CF0),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     )
                   ],
-                ),
-              )
-            ],
+                );
+              },
+            ),
           );
-        },
-      ),
-    );
   }
 
   _indicator() {
     return Container(
-      margin: EdgeInsets.only(top: 20),
+      margin: const EdgeInsets.only(top: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          for (var i = 0; i < listOfColor.length; i++)
+          for (var i = 0; i < listOfPopularFilm.length; i++)
             i == currentIndexSlider
                 ? Container(
-                    margin: EdgeInsets.symmetric(horizontal: 3),
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
                     width: 30,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: Color(0xff685CF0),
+                      color: const Color(0xff685CF0),
                       borderRadius: BorderRadius.circular(16),
                     ),
                   )
                 : Container(
                     width: 8,
                     height: 8,
-                    margin: EdgeInsets.symmetric(horizontal: 3),
-                    decoration: BoxDecoration(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 3,
+                    ),
+                    decoration: const BoxDecoration(
                       color: Colors.grey,
                       shape: BoxShape.circle,
                     ),
